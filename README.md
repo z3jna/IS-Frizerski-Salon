@@ -22,7 +22,29 @@ php artisan storage:link
 
 - Administrator: `admin@salon.test` / `password`
 - Zaposleni: `mila@salon.test` / `password`
+- Zaposleni: `marko@salon.test` / `password`
+- Zaposleni: `ivana@salon.test` / `password`
+- Zaposleni: `stefan@salon.test` / `password`
 - Klijent: `ana@salon.test` / `password`
+- Klijent: `jelena@salon.test` / `password`
+- Klijent: `marija@salon.test` / `password`
+- Klijent: `sofija@salon.test` / `password`
+- Klijent: `nikola@salon.test` / `password`
+- Klijent: `tamara@salon.test` / `password`
+- Klijent: `katarina@salon.test` / `password`
+- Klijent: `lazar@salon.test` / `password`
+- Klijent: `milica@salon.test` / `password`
+- Klijent: `sanja@salon.test` / `password`
+
+Seed pravi demo bazu sa 15 korisnika, 4 zaposlena, 10 klijenata, 16 usluga, 20 termina, 7 realizovanih tretmana, fotografijama tretmana, racunima, uplatama i podsetnicima.
+
+Za potpuno cistu bazu pokrenite:
+
+```bash
+php artisan migrate:fresh --seed --force
+```
+
+Za produkciju/Railway koristite ovu komandu samo ako zelite da obrisete sve postojece podatke i napravite novu demo bazu od nule.
 
 ## Railway deploy
 
