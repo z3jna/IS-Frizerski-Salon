@@ -20,8 +20,8 @@
     <div class="col-md-4">
         <label class="form-label">Status transakcije</label>
         <select name="status_transakcije" class="form-select">
-            @foreach(['uspesno', 'na_cekanju', 'odbijeno'] as $status)
-                <option value="{{ $status }}" @selected(old('status_transakcije', $uplata->status_transakcije ?? 'uspesno') === $status)>{{ $status }}</option>
+            @foreach(['uspesno' => 'Uspešno', 'na_cekanju' => 'Na čekanju', 'odbijeno' => 'Odbijeno'] as $status => $label)
+                <option value="{{ $status }}" @selected(old('status_transakcije', $uplata->status_transakcije ?? 'uspesno') === $status)>{{ $label }}</option>
             @endforeach
         </select>
     </div>

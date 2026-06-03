@@ -13,7 +13,7 @@
         <dt class="col-sm-3">Termin</dt><dd class="col-sm-9">{{ $podsetnik->termin ? '#'.$podsetnik->termin->id.' - '.$podsetnik->termin->usluga->naziv : '-' }}</dd>
         <dt class="col-sm-3">Datum slanja</dt><dd class="col-sm-9">{{ $podsetnik->datum_slanja->format('d.m.Y H:i') }}</dd>
         <dt class="col-sm-3">Tip</dt><dd class="col-sm-9">{{ $podsetnik->tip_podsetnika }}</dd>
-        <dt class="col-sm-3">Status</dt><dd class="col-sm-9">{{ $podsetnik->status }}</dd>
+        <dt class="col-sm-3">Status</dt><dd class="col-sm-9">{{ ['planiran' => 'Planiran', 'poslat' => 'Poslat', 'neuspesan' => 'Neuspešan'][$podsetnik->status] ?? $podsetnik->status }}</dd>
         <dt class="col-sm-3">Sadržaj</dt><dd class="col-sm-9">{{ $podsetnik->sadrzaj }}</dd>
     </dl>
 </div>

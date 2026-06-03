@@ -16,7 +16,7 @@
                 <td>{{ $podsetnik->datum_slanja->format('d.m.Y H:i') }}</td>
                 <td>{{ $podsetnik->klijent->ime }} {{ $podsetnik->klijent->prezime }}</td>
                 <td>{{ $podsetnik->tip_podsetnika }}</td>
-                <td>{{ $podsetnik->status }}</td>
+                <td>{{ ['planiran' => 'Planiran', 'poslat' => 'Poslat', 'neuspesan' => 'Neuspešan'][$podsetnik->status] ?? $podsetnik->status }}</td>
                 <td>{{ \Illuminate\Support\Str::limit($podsetnik->sadrzaj, 80) }}</td>
                 <td class="text-end"><a href="{{ route('podsetnici.show', $podsetnik) }}" class="btn btn-sm btn-outline-primary">Detalji</a></td>
             </tr>

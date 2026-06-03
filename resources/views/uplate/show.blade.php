@@ -17,7 +17,7 @@
         <dt class="col-sm-3">Klijent</dt><dd class="col-sm-9">{{ $uplata->racun->termin->klijent->ime }} {{ $uplata->racun->termin->klijent->prezime }}</dd>
         <dt class="col-sm-3">Datum</dt><dd class="col-sm-9">{{ $uplata->datum_uplate->format('d.m.Y') }}</dd>
         <dt class="col-sm-3">Iznos</dt><dd class="col-sm-9">{{ number_format($uplata->iznos, 2) }}</dd>
-        <dt class="col-sm-3">Status</dt><dd class="col-sm-9">{{ $uplata->status_transakcije }}</dd>
+        <dt class="col-sm-3">Status</dt><dd class="col-sm-9">{{ ['uspesno' => 'Uspešno', 'na_cekanju' => 'Na čekanju', 'odbijeno' => 'Odbijeno'][$uplata->status_transakcije] ?? $uplata->status_transakcije }}</dd>
     </dl>
 </div>
 @endsection

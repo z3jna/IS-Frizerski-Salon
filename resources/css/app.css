@@ -2,18 +2,20 @@
 
 :root {
     --salon-ink: #1f2933;
-    --salon-muted: #697386;
-    --salon-line: #d8e0ea;
-    --salon-soft: #f5f7fb;
+    --salon-muted: #667085;
+    --salon-line: #eadfeb;
+    --salon-soft: #fff7fb;
     --salon-panel: #ffffff;
-    --salon-accent: #0f766e;
-    --salon-accent-dark: #0b5751;
-    --salon-accent-soft: #dff5f1;
-    --salon-coral: #c35a3a;
-    --salon-gold: #d7a84f;
-    --salon-night: #111827;
-    --salon-shadow: 0 18px 45px rgba(31, 41, 51, .11);
-    --salon-shadow-soft: 0 10px 28px rgba(31, 41, 51, .08);
+    --salon-accent: #d9468f;
+    --salon-accent-dark: #aa1f67;
+    --salon-accent-soft: #fde7f3;
+    --salon-mint: #13a89e;
+    --salon-mint-soft: #defaf6;
+    --salon-coral: #f9734d;
+    --salon-gold: #f5c451;
+    --salon-night: #241527;
+    --salon-shadow: 0 18px 45px rgba(75, 36, 60, .13);
+    --salon-shadow-soft: 0 10px 28px rgba(75, 36, 60, .09);
 }
 
 * {
@@ -28,8 +30,9 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     background:
-        radial-gradient(circle at 12% 0%, rgba(15, 118, 110, .1), transparent 24rem),
-        linear-gradient(180deg, #fbfcfd 0%, var(--salon-soft) 34rem),
+        radial-gradient(circle at 12% 0%, rgba(217, 70, 143, .13), transparent 24rem),
+        radial-gradient(circle at 95% 10%, rgba(19, 168, 158, .12), transparent 22rem),
+        linear-gradient(180deg, #fffdf7 0%, var(--salon-soft) 34rem),
         var(--salon-soft);
     color: var(--salon-ink);
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -47,9 +50,9 @@ a:hover {
 
 .app-navbar {
     min-height: 68px;
-    background: rgba(17, 24, 39, .96);
+    background: linear-gradient(90deg, rgba(36, 21, 39, .98), rgba(70, 27, 60, .97));
     border-bottom: 1px solid rgba(255, 255, 255, .08);
-    box-shadow: 0 12px 32px rgba(16, 24, 40, .2);
+    box-shadow: 0 12px 32px rgba(70, 27, 60, .22);
 }
 
 .app-navbar .container-fluid {
@@ -83,7 +86,7 @@ a:hover {
 
 .navbar-dark .navbar-nav .nav-link:hover,
 .navbar-dark .navbar-nav .nav-link:focus {
-    background: rgba(255, 255, 255, .09);
+    background: rgba(245, 196, 81, .16);
     color: #ffffff;
     text-decoration: none;
 }
@@ -91,9 +94,10 @@ a:hover {
 .navbar .btn-light {
     border: 0;
     border-radius: 6px;
-    color: var(--salon-night);
+    color: #381b2f;
     font-weight: 750;
     padding: .45rem .8rem;
+    background: #fff4bf;
 }
 
 .navbar-account {
@@ -112,8 +116,8 @@ a:hover {
     min-height: 32px;
     border-radius: 999px;
     padding: .25rem .65rem;
-    background: rgba(255, 255, 255, .1);
-    color: rgba(255, 255, 255, .86);
+    background: rgba(245, 196, 81, .16);
+    color: #fff4bf;
     font-size: .82rem;
     font-weight: 750;
     text-transform: uppercase;
@@ -182,7 +186,7 @@ a:hover {
     padding: clamp(4rem, 7vw, 7rem) clamp(1rem, 6vw, 5rem) 2rem;
     isolation: isolate;
     overflow: hidden;
-    background: #111827;
+    background: var(--salon-night);
 }
 
 .home-hero::before {
@@ -191,8 +195,9 @@ a:hover {
     inset: 0;
     z-index: -1;
     background:
-        linear-gradient(90deg, rgba(8, 13, 22, .88) 0%, rgba(8, 13, 22, .62) 44%, rgba(8, 13, 22, .18) 100%),
-        linear-gradient(180deg, rgba(8, 13, 22, .08) 0%, rgba(8, 13, 22, .74) 100%);
+        linear-gradient(90deg, rgba(36, 21, 39, .9) 0%, rgba(58, 28, 50, .63) 44%, rgba(58, 28, 50, .16) 100%),
+        linear-gradient(180deg, rgba(36, 21, 39, .08) 0%, rgba(36, 21, 39, .72) 100%),
+        linear-gradient(135deg, rgba(217, 70, 143, .22), rgba(19, 168, 158, .16));
 }
 
 .home-hero__image {
@@ -222,7 +227,7 @@ a:hover {
 }
 
 .home-hero .home-eyebrow {
-    color: #ffd27a;
+    color: #fff0a8;
 }
 
 .home-hero h1 {
@@ -263,10 +268,10 @@ a:hover {
     align-items: center;
     min-height: 42px;
     padding: .55rem .9rem;
-    border: 1px solid rgba(255, 255, 255, .22);
+    border: 1px solid rgba(255, 240, 168, .34);
     border-radius: 999px;
     color: #ffffff;
-    background: rgba(255, 255, 255, .1);
+    background: rgba(255, 255, 255, .13);
     backdrop-filter: blur(10px);
     font-weight: 750;
 }
@@ -298,7 +303,7 @@ a:hover {
     grid-template-rows: auto 1fr;
     min-width: 0;
     overflow: hidden;
-    border: 1px solid rgba(216, 224, 234, .95);
+    border: 1px solid rgba(234, 223, 235, .95);
     border-radius: 8px;
     background: var(--salon-panel);
     box-shadow: var(--salon-shadow-soft);
@@ -308,7 +313,7 @@ a:hover {
     width: 100%;
     aspect-ratio: 4 / 3;
     object-fit: cover;
-    background: #e8eef5;
+    background: #f6edf5;
 }
 
 .service-card div {
@@ -331,9 +336,9 @@ a:hover {
     grid-template-rows: 1fr auto;
     justify-content: space-between;
     padding: 1.2rem;
-    border-color: rgba(15, 118, 110, .24);
+    border-color: rgba(217, 70, 143, .24);
     background:
-        linear-gradient(135deg, rgba(223, 245, 241, .88), rgba(255, 255, 255, .95) 58%),
+        linear-gradient(135deg, rgba(253, 231, 243, .9), rgba(222, 250, 246, .78) 56%, rgba(255, 255, 255, .96)),
         var(--salon-panel);
 }
 
@@ -351,7 +356,7 @@ a:hover {
     margin-bottom: .85rem;
     border-radius: 999px;
     padding: .35rem .55rem;
-    background: #ffffff;
+    background: #fff4bf;
     color: var(--salon-accent-dark);
     font-size: .76rem;
     font-weight: 850;
@@ -377,7 +382,7 @@ a:hover {
     overflow: hidden;
     min-height: 520px;
     border-radius: 8px;
-    background: #111827;
+    background: var(--salon-night);
     box-shadow: var(--salon-shadow);
 }
 
@@ -385,7 +390,7 @@ a:hover {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(17, 24, 39, .1), rgba(17, 24, 39, .56));
+    background: linear-gradient(180deg, rgba(36, 21, 39, .1), rgba(36, 21, 39, .56));
 }
 
 .auth-visual img {
@@ -413,7 +418,7 @@ a:hover {
 .page-panel,
 .metric-card,
 .table-panel {
-    background: rgba(255, 255, 255, .94);
+    background: rgba(255, 255, 255, .96);
     border: 1px solid var(--salon-line);
     border-radius: 8px;
     box-shadow: var(--salon-shadow);
@@ -431,6 +436,18 @@ a:hover {
     flex-direction: column;
     justify-content: space-between;
     border-top: 4px solid var(--salon-accent);
+}
+
+.row > :nth-child(2n) .metric-card {
+    border-top-color: var(--salon-mint);
+}
+
+.row > :nth-child(3n) .metric-card {
+    border-top-color: var(--salon-gold);
+}
+
+.row > :nth-child(4n) .metric-card {
+    border-top-color: var(--salon-coral);
 }
 
 .metric-card .label {
@@ -475,7 +492,7 @@ a:hover {
     --bs-btn-border-color: var(--salon-accent);
     --bs-btn-hover-bg: var(--salon-accent-dark);
     --bs-btn-hover-border-color: var(--salon-accent-dark);
-    --bs-btn-focus-shadow-rgb: 15, 118, 110;
+    --bs-btn-focus-shadow-rgb: 217, 70, 143;
 }
 
 .btn-outline-primary {
@@ -483,7 +500,7 @@ a:hover {
     --bs-btn-border-color: var(--salon-accent);
     --bs-btn-hover-bg: var(--salon-accent);
     --bs-btn-hover-border-color: var(--salon-accent);
-    --bs-btn-focus-shadow-rgb: 15, 118, 110;
+    --bs-btn-focus-shadow-rgb: 217, 70, 143;
 }
 
 .form-control,
@@ -496,7 +513,7 @@ a:hover {
 .form-control:focus,
 .form-select:focus {
     border-color: var(--salon-accent);
-    box-shadow: 0 0 0 .2rem rgba(15, 118, 110, .14);
+    box-shadow: 0 0 0 .2rem rgba(217, 70, 143, .14);
 }
 
 .form-label {
@@ -525,7 +542,7 @@ textarea.form-control {
 }
 
 .table thead th {
-    background: #f8fafc;
+    background: #fff4fa;
     border-bottom: 1px solid var(--salon-line);
     color: #596170;
     font-size: .78rem;
@@ -541,11 +558,13 @@ textarea.form-control {
 }
 
 .table tbody tr:hover td {
-    background: #fbfcfd;
+    background: #fffaf2;
 }
 
 .badge-status {
+    background: var(--salon-accent-soft) !important;
     border-radius: 999px;
+    color: var(--salon-accent-dark) !important;
     font-size: .72rem;
     letter-spacing: 0;
     padding: .42rem .58rem;
@@ -573,7 +592,7 @@ dl dd {
     padding: .9rem;
     border: 1px solid var(--salon-line);
     border-radius: 8px;
-    background: #fbfcfd;
+    background: #fffafc;
 }
 
 .photo-section__header {
@@ -622,7 +641,7 @@ dl dd {
 
 .photo-card:hover,
 .photo-card:focus {
-    border-color: rgba(15, 118, 110, .45);
+    border-color: rgba(217, 70, 143, .45);
     box-shadow: 0 14px 28px rgba(36, 49, 63, .12);
     color: var(--salon-ink);
     text-decoration: none;
@@ -632,7 +651,7 @@ dl dd {
 .photo-card img,
 .photo-thumb {
     aspect-ratio: 4 / 3;
-    background: #eef2f6;
+    background: #f6edf5;
     display: block;
     object-fit: cover;
     width: 100%;
@@ -676,9 +695,9 @@ dl dd {
 .existing-photos {
     margin-top: .5rem;
     padding: 1rem;
-    border: 1px solid rgba(195, 90, 58, .24);
+    border: 1px solid rgba(249, 115, 77, .26);
     border-radius: 8px;
-    background: rgba(195, 90, 58, .09);
+    background: rgba(249, 115, 77, .1);
 }
 
 .existing-photos .photo-section {
@@ -711,7 +730,7 @@ dl dd {
         padding: .75rem;
         border: 1px solid rgba(255, 255, 255, .1);
         border-radius: 8px;
-        background: rgba(17, 24, 39, .98);
+        background: rgba(36, 21, 39, .98);
     }
 
     .navbar-nav {
@@ -753,12 +772,14 @@ dl dd {
 
     .home-hero {
         min-height: calc(100vh - 132px);
+        width: auto;
         padding: 3.5rem 1rem 1.25rem;
     }
 
     .home-hero__content,
     .home-lead {
         max-width: calc(100vw - 2rem);
+        width: 100%;
     }
 
     .home-hero h1 {
@@ -768,6 +789,7 @@ dl dd {
     }
 
     .home-actions .btn {
+        max-width: 100%;
         width: 100%;
     }
 

@@ -25,7 +25,7 @@
         <dt class="col-sm-3">Klijent</dt><dd class="col-sm-9">{{ $termin->klijent->ime }} {{ $termin->klijent->prezime }}</dd>
         <dt class="col-sm-3">Zaposleni</dt><dd class="col-sm-9">{{ $termin->zaposleni->ime }} {{ $termin->zaposleni->prezime }}</dd>
         <dt class="col-sm-3">Usluga</dt><dd class="col-sm-9">{{ $termin->usluga->naziv }}</dd>
-        <dt class="col-sm-3">Status</dt><dd class="col-sm-9">{{ $termin->status }}</dd>
+        <dt class="col-sm-3">Status</dt><dd class="col-sm-9">{{ ['zakazan' => 'Zakazan', 'realizovan' => 'Realizovan', 'otkazan' => 'Otkazan'][$termin->status] ?? $termin->status }}</dd>
         <dt class="col-sm-3">Napomena</dt><dd class="col-sm-9">{{ $termin->napomena ?? '-' }}</dd>
     </dl>
 </div>

@@ -33,7 +33,7 @@
                         <input name="adresa" value="{{ old('adresa') }}" class="form-control">
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Datum rodjenja</label>
+                        <label class="form-label">Datum rođenja</label>
                         <input type="date" name="datum_rodjenja" value="{{ old('datum_rodjenja') }}" class="form-control">
                     </div>
                     <div class="col-12">
@@ -50,7 +50,7 @@
                     </div>
                 </div>
                 <div class="mt-4 d-flex justify-content-between align-items-center">
-                    <a href="{{ route('login') }}">Vec imate nalog?</a>
+                    <a href="{{ route('login') }}">Već imate nalog?</a>
                     <button class="btn btn-primary">Registruj se</button>
                 </div>
             </form>

@@ -17,7 +17,7 @@
                 <td>{{ $racun->termin->klijent->ime }} {{ $racun->termin->klijent->prezime }}</td>
                 <td>{{ $racun->termin->usluga->naziv }}</td>
                 <td>{{ number_format($racun->ukupan_iznos, 2) }}</td>
-                <td>{{ $racun->status_placanja }}</td>
+                <td>{{ ['neplaceno' => 'Neplaćeno', 'delimicno' => 'Delimično', 'placeno' => 'Plaćeno'][$racun->status_placanja] ?? $racun->status_placanja }}</td>
                 <td class="text-end"><a href="{{ route('racuni.show', $racun) }}" class="btn btn-sm btn-outline-primary">Detalji</a></td>
             </tr>
         @empty

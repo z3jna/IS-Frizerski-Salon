@@ -15,7 +15,7 @@
                 <td>#{{ $uplata->racun_id }}</td>
                 <td>{{ $uplata->racun->termin->klijent->ime }} {{ $uplata->racun->termin->klijent->prezime }}</td>
                 <td>{{ number_format($uplata->iznos, 2) }}</td>
-                <td>{{ $uplata->status_transakcije }}</td>
+                <td>{{ ['uspesno' => 'Uspešno', 'na_cekanju' => 'Na čekanju', 'odbijeno' => 'Odbijeno'][$uplata->status_transakcije] ?? $uplata->status_transakcije }}</td>
                 <td class="text-end"><a href="{{ route('uplate.show', $uplata) }}" class="btn btn-sm btn-outline-primary">Detalji</a></td>
             </tr>
         @empty

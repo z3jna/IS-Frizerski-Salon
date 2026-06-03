@@ -19,7 +19,7 @@
 @endif
 
 <div class="table-panel p-3">
-    <h2 class="h5 mb-3">Najblizi termini</h2>
+    <h2 class="h5 mb-3">Najbliži termini</h2>
     <div class="table-responsive">
         <table class="table align-middle">
             <thead>
@@ -41,7 +41,7 @@
                     <td>{{ $termin->klijent->ime }} {{ $termin->klijent->prezime }}</td>
                     <td>{{ $termin->zaposleni->ime }} {{ $termin->zaposleni->prezime }}</td>
                     <td>{{ $termin->usluga->naziv }}</td>
-                    <td><span class="badge text-bg-secondary badge-status">{{ $termin->status }}</span></td>
+                    <td><span class="badge text-bg-secondary badge-status">{{ ['zakazan' => 'Zakazan', 'realizovan' => 'Realizovan', 'otkazan' => 'Otkazan'][$termin->status] ?? $termin->status }}</span></td>
                     <td><a href="{{ route('termini.show', $termin) }}" class="btn btn-sm btn-outline-primary">Detalji</a></td>
                 </tr>
             @empty

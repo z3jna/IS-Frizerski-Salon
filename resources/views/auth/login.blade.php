@@ -7,7 +7,7 @@
     </div>
     <div class="auth-card">
         <div class="page-panel p-4">
-            <p class="home-eyebrow mb-2">Dobro dosli nazad</p>
+            <p class="home-eyebrow mb-2">Dobro došli nazad</p>
             <h1 class="h4 mb-4">Prijava</h1>
             <form method="POST" action="{{ route('login') }}">
                 @csrf
