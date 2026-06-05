@@ -767,7 +767,7 @@ dl dd {
 
     .navbar-toggler {
         position: static;
-        margin-left: .75rem;
+        margin-left: auto;
     }
 
     .home-hero {
