@@ -27,28 +27,29 @@ import { ZaposleniService } from '../services/zaposleni.service';
                 </div>
                 <div class="col-md-4">
                     <label>Zaposleni</label>
-                    <select class="form-select" name="zaposleni_id" [(ngModel)]="form.zaposleni_id" (change)="loadSlots()">
+                    <select class="form-select" name="zaposleni_id" [(ngModel)]="form.zaposleni_id" (ngModelChange)="loadSlots()">
                         <option [ngValue]="null">Izaberi zaposlenog</option>
                         <option *ngFor="let item of zaposleni" [ngValue]="item.id">{{ item.ime }} {{ item.prezime }}</option>
                     </select>
                 </div>
                 <div class="col-md-4">
                     <label>Usluga</label>
-                    <select class="form-select" name="usluga_id" [(ngModel)]="form.usluga_id" (change)="loadSlots()">
+                    <select class="form-select" name="usluga_id" [(ngModel)]="form.usluga_id" (ngModelChange)="loadSlots()">
                         <option [ngValue]="null">Izaberi uslugu</option>
                         <option *ngFor="let usluga of usluge" [ngValue]="usluga.id">{{ usluga.naziv }}</option>
                     </select>
                 </div>
                 <div class="col-md-4">
                     <label>Datum</label>
-                    <input class="form-control" type="date" name="datum" [(ngModel)]="form.datum" [min]="today" (change)="loadSlots()" required>
+                    <input class="form-control" type="date" name="datum" [(ngModel)]="form.datum" [min]="today" (ngModelChange)="loadSlots()" required>
                 </div>
                 <div class="col-md-4">
                     <label>Dostupno vreme</label>
-                    <select class="form-select" name="vreme_pocetka" [(ngModel)]="form.vreme_pocetka">
-                        <option [ngValue]="''">Izaberi vreme</option>
+                    <select class="form-select" name="vreme_pocetka" [(ngModel)]="form.vreme_pocetka" [disabled]="timeSelectDisabled" required>
+                        <option [ngValue]="''">{{ timePlaceholder }}</option>
                         <option *ngFor="let slot of slots" [ngValue]="slot.vreme_pocetka">{{ slot.vreme_pocetka }} - {{ slot.vreme_zavrsetka }}</option>
                     </select>
+                    <div class="form-text" *ngIf="timeHelpText">{{ timeHelpText }}</div>
                 </div>
                 <div class="col-md-8">
                     <label>Napomena</label>
@@ -72,6 +73,8 @@ export class TerminCreateComponent implements OnInit {
     slots: DostupanTermin[] = [];
     today = this.localDate();
     loading = false;
+    loadingSlots = false;
+    slotsLoaded = false;
     errors: string[] = [];
     form = {
         klijent_id: null as number | null,
@@ -90,32 +93,88 @@ export class TerminCreateComponent implements OnInit {
         }
     }
 
+    get canLoadSlots(): boolean {
+        return Boolean(this.form.datum && this.form.zaposleni_id && this.form.usluga_id);
+    }
+
+    get timeSelectDisabled(): boolean {
+        return ! this.canLoadSlots || this.loadingSlots || ! this.slots.length;
+    }
+
+    get timePlaceholder(): string {
+        if (! this.canLoadSlots) {
+            return 'Prvo izaberi zaposlenog, uslugu i datum';
+        }
+
+        if (this.loadingSlots) {
+            return 'Ucitavanje termina...';
+        }
+
+        if (this.slotsLoaded && ! this.slots.length) {
+            return 'Nema slobodnih termina';
+        }
+
+        return 'Izaberi vreme';
+    }
+
+    get timeHelpText(): string {
+        if (! this.canLoadSlots) {
+            return 'Dostupna vremena se prikazuju tek nakon izbora zaposlenog, usluge i datuma.';
+        }
+
+        if (this.loadingSlots) {
+            return 'Proveravam slobodne termine u radnom vremenu 08:00-20:00.';
+        }
+
+        if (this.slotsLoaded && ! this.slots.length) {
+            return 'Za izabrani datum nema slobodnih termina u buducnosti. Probajte drugi datum, zaposlenog ili uslugu.';
+        }
+
+        return '';
+    }
+
     loadSlots(): void {
         this.errors = [];
         this.form.vreme_pocetka = '';
+        this.slotsLoaded = false;
 
-        if (! this.form.datum || ! this.form.zaposleni_id || ! this.form.usluga_id) {
+        if (! this.canLoadSlots) {
             this.slots = [];
+            this.loadingSlots = false;
             return;
         }
 
+        this.loadingSlots = true;
         this.terminiService.dostupniTermini(this.form.datum, this.form.zaposleni_id, this.form.usluga_id)
             .subscribe({
-                next: (response) => this.slots = response.data,
+                next: (response) => {
+                    this.slots = response.data;
+                    this.slotsLoaded = true;
+                },
                 error: (error) => {
                     this.slots = [];
+                    this.slotsLoaded = true;
+                    this.loadingSlots = false;
                     const bag = error.error?.errors || {};
                     this.errors = Object.values(bag).flat() as string[];
                     if (! this.errors.length) {
                         this.errors = [error.error?.message || 'Nema dostupnih termina za izabrani datum.'];
                     }
                 },
+                complete: () => this.loadingSlots = false,
             });
     }
 
     submit(): void {
         this.loading = true;
         this.errors = [];
+
+        if (! this.form.vreme_pocetka) {
+            this.errors = ['Izaberite dostupno vreme termina.'];
+            this.loading = false;
+            return;
+        }
+
         const payload: Record<string, unknown> = { ...this.form };
         if (this.user?.role === 'klijent') {
             delete payload['klijent_id'];
