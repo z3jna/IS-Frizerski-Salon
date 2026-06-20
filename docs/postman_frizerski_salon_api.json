@@ -1,0 +1,122 @@
+{
+  "info": {
+    "name": "Frizerski salon API - testovi",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000" },
+    { "key": "token", "value": "" },
+    { "key": "klijent_id", "value": "1" },
+    { "key": "zaposleni_id", "value": "1" },
+    { "key": "usluga_id", "value": "1" },
+    { "key": "termin_id", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "POST /api/register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/api/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"ime\":\"Test\",\"prezime\":\"Klijent\",\"email\":\"test.klijent{{$timestamp}}@salon.test\",\"telefon\":\"060/100-200\",\"password\":\"password\",\"password_confirmation\":\"password\"}"
+        }
+      }
+    },
+    {
+      "name": "POST /api/login",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Login vraca token', function () {",
+            "  pm.response.to.have.status(200);",
+            "  pm.expect(pm.response.json().token).to.be.a('string');",
+            "});",
+            "pm.collectionVariables.set('token', pm.response.json().token);"
+          ],
+          "type": "text/javascript"
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/api/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\":\"admin@salon.test\",\"password\":\"password\"}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/usluge",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base_url}}/api/usluge"
+      }
+    },
+    {
+      "name": "POST /api/termini",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Termin je kreiran', function () { pm.response.to.have.status(201); });",
+            "pm.collectionVariables.set('termin_id', pm.response.json().data.id);"
+          ],
+          "type": "text/javascript"
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{base_url}}/api/termini",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"datum\":\"2026-07-20\",\"vreme_pocetka\":\"09:00\",\"klijent_id\":{{klijent_id}},\"zaposleni_id\":{{zaposleni_id}},\"usluga_id\":{{usluga_id}},\"napomena\":\"Postman test\"}"
+        }
+      }
+    },
+    {
+      "name": "GET /api/termini/klijent/{id}",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base_url}}/api/termini/klijent/{{klijent_id}}"
+      }
+    },
+    {
+      "name": "GET /api/termini/zaposleni/{id}",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base_url}}/api/termini/zaposleni/{{zaposleni_id}}"
+      }
+    },
+    {
+      "name": "PUT /api/termini/{id}",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{base_url}}/api/termini/{{termin_id}}",
+        "body": { "mode": "raw", "raw": "{\"status\":\"otkazan\"}" }
+      }
+    },
+    {
+      "name": "DELETE /api/termini/{id}",
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base_url}}/api/termini/{{termin_id}}"
+      }
+    }
+  ]
+}

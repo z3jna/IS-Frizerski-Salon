@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="sr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Frizerski Salon</title>
+    <link rel="stylesheet" href="/resources/css/app.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-xl navbar-dark app-navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="http://127.0.0.1:8000/">Frizerski salon</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="nav">
+            <ul class="navbar-nav ms-auto align-items-xl-center">
+                <li class="nav-item"><a class="nav-link" href="http://127.0.0.1:8000/">Pocetna</a></li>
+                <li class="nav-item"><a class="nav-link" href="/login">Prijava</a></li>
+                <li class="nav-item"><a class="btn btn-sm btn-light ms-lg-2" href="/register">Registracija</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="app-shell">
+    <div class="container-fluid px-4">
+        <app-root></app-root>
+    </div>
+</main>
+<script>
+    window.salonRoutes = {
+        phpBase: 'http://127.0.0.1:8000',
+        angularBase: 'http://127.0.0.1:4200',
+    };
+</script>
+<script type="module" src="/resources/js/app.js"></script>
+</body>
+</html>

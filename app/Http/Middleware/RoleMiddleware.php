@@ -13,6 +13,10 @@ class RoleMiddleware
         $user = $request->user();
 
         if (! $user || ! in_array($user->role, $roles, true)) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => 'Nemate pravo pristupa za ovu akciju.'], 403);
+            }
+
             abort(403);
         }
 

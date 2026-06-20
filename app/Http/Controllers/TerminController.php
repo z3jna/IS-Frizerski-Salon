@@ -29,15 +29,6 @@ class TerminController extends Controller
         return view('termini.index', compact('termini'));
     }
 
-    public function create(): View
-    {
-        $klijenti = Klijent::orderBy('prezime')->orderBy('ime')->get();
-        $zaposleni = Zaposleni::orderBy('prezime')->orderBy('ime')->get();
-        $usluge = Usluga::where('dostupnost', true)->orderBy('naziv')->get();
-
-        return view('termini.create', compact('klijenti', 'zaposleni', 'usluge'));
-    }
-
     public function store(Request $request): RedirectResponse
     {
         $data = $this->validated($request);

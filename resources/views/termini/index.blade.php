@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h3 mb-0">Termini</h1>
-    <a href="{{ route('termini.create') }}" class="btn btn-primary">Novi termin</a>
+    <a href="{{ \App\Support\FrontendUrl::angular('/termini/create') }}" class="btn btn-primary">Novi termin</a>
 </div>
 <div class="table-panel p-3">
     <div class="table-responsive">

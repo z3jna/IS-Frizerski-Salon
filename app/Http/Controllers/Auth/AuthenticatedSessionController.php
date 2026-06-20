@@ -3,19 +3,16 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Support\FrontendUrl;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
+use Illuminate\Support\Str;
 
 class AuthenticatedSessionController extends Controller
 {
-    public function create(): View
-    {
-        return view('auth.login');
-    }
-
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|JsonResponse
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
@@ -23,12 +20,31 @@ class AuthenticatedSessionController extends Controller
         ]);
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Uneti kredencijali nisu ispravni.',
+                    'errors' => ['email' => ['Uneti kredencijali nisu ispravni.']],
+                ], 422);
+            }
+
             return back()
                 ->withErrors(['email' => 'Uneti kredencijali nisu ispravni.'])
                 ->onlyInput('email');
         }
 
         $request->session()->regenerate();
+        $user = $request->user()->load(['klijent', 'zaposleni']);
+        $token = Str::random(80);
+        $user->forceFill(['api_token' => $token])->save();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Prijava je uspesna.',
+                'redirect' => route('dashboard'),
+                'token' => $token,
+                'user' => $user,
+            ]);
+        }
 
         return redirect()->intended(route('dashboard'));
     }
@@ -40,6 +56,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->away(FrontendUrl::angular('/login'));
     }
 }

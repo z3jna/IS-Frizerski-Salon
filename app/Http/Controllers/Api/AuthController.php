@@ -1,22 +1,21 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Klijent;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-class RegisteredUserController extends Controller
+class AuthController extends Controller
 {
-    public function store(Request $request): RedirectResponse|JsonResponse
+    public function register(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'ime' => ['required', 'string', 'max:255'],
@@ -29,12 +28,15 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', 'min:8'],
         ]);
 
-        $user = DB::transaction(function () use ($validated) {
+        $token = Str::random(80);
+
+        $user = DB::transaction(function () use ($validated, $token) {
             $user = User::create([
                 'name' => $validated['ime'].' '.$validated['prezime'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
                 'role' => User::ROLE_KLIJENT,
+                'api_token' => $token,
             ]);
 
             Klijent::create([
@@ -47,24 +49,54 @@ class RegisteredUserController extends Controller
                 'preferencije' => $validated['preferencije'] ?? null,
             ]);
 
-            return $user;
+            return $user->load(['klijent', 'zaposleni']);
         });
 
         event(new Registered($user));
-        Auth::login($user);
 
+        return response()->json([
+            'message' => 'Registracija je uspesna.',
+            'token' => $token,
+            'user' => $user,
+        ], 201);
+    }
+
+    public function login(Request $request): JsonResponse
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string'],
+        ]);
+
+        if (! Auth::attempt($credentials)) {
+            return response()->json([
+                'message' => 'Uneti kredencijali nisu ispravni.',
+                'errors' => ['email' => ['Uneti kredencijali nisu ispravni.']],
+            ], 422);
+        }
+
+        $user = User::where('email', $credentials['email'])->firstOrFail();
         $token = Str::random(80);
         $user->forceFill(['api_token' => $token])->save();
 
-        if ($request->expectsJson()) {
-            return response()->json([
-                'message' => 'Registracija je uspesna.',
-                'redirect' => route('dashboard'),
-                'token' => $token,
-                'user' => $user->load(['klijent', 'zaposleni']),
-            ], 201);
-        }
+        return response()->json([
+            'message' => 'Prijava je uspesna.',
+            'token' => $token,
+            'user' => $user->load(['klijent', 'zaposleni']),
+        ]);
+    }
 
-        return redirect()->route('dashboard')->with('status', 'Registracija je uspesna. Korisnik je sacuvan.');
+    public function logout(Request $request): JsonResponse
+    {
+        $request->user()->forceFill(['api_token' => null])->save();
+
+        return response()->json(['message' => 'Odjava je uspesna.']);
+    }
+
+    public function user(Request $request): JsonResponse
+    {
+        return response()->json([
+            'user' => $request->user()->load(['klijent', 'zaposleni']),
+        ]);
     }
 }

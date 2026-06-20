@@ -11,8 +11,8 @@
             @auth
                 <a href="{{ route('dashboard') }}" class="btn btn-primary btn-lg">Otvori dashboard</a>
             @else
-                <a href="{{ route('login') }}" class="btn btn-primary btn-lg">Prijava</a>
-                <a href="{{ route('register') }}" class="btn btn-outline-light btn-lg">Registracija</a>
+                <a href="{{ \App\Support\FrontendUrl::angular('/login') }}" class="btn btn-primary btn-lg">Prijava</a>
+                <a href="{{ \App\Support\FrontendUrl::angular('/register') }}" class="btn btn-outline-light btn-lg">Registracija</a>
             @endauth
         </div>
     </div>
@@ -53,7 +53,7 @@
             @auth
                 <a href="{{ route('termini.index') }}" class="btn btn-outline-primary">Pregled termina</a>
             @else
-                <a href="{{ route('login') }}" class="btn btn-outline-primary">Uđi u aplikaciju</a>
+                <a href="{{ \App\Support\FrontendUrl::angular('/login') }}" class="btn btn-outline-primary">Uđi u aplikaciju</a>
             @endauth
         </article>
     </div>
