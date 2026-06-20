@@ -13,6 +13,9 @@ use Illuminate\Validation\ValidationException;
 
 class TerminController extends Controller
 {
+    private const WORK_START = '08:00';
+    private const WORK_END = '20:00';
+
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -38,6 +41,7 @@ class TerminController extends Controller
 
         $data['status'] = $data['status'] ?? 'zakazan';
         $data['vreme_zavrsetka'] = $this->calculateEndTime($data['datum'], $data['vreme_pocetka'], $data['usluga_id']);
+        $this->ensureBookableTime($data);
         $this->ensureNoOverlap($data);
 
         $termin = Termin::create($data)->load(['klijent', 'zaposleni', 'usluga']);
@@ -71,6 +75,7 @@ class TerminController extends Controller
 
         $merged['datum'] = Carbon::parse($merged['datum'])->format('Y-m-d');
         $merged['vreme_zavrsetka'] = $this->calculateEndTime($merged['datum'], substr($merged['vreme_pocetka'], 0, 5), (int) $merged['usluga_id']);
+        $this->ensureBookableTime($merged);
         $this->ensureNoOverlap($merged, $termini);
 
         $termini->update($merged);
@@ -132,11 +137,16 @@ class TerminController extends Controller
 
         $duration = (int) Usluga::findOrFail($data['usluga_id'])->trajanje_minuta;
         $date = Carbon::parse($data['datum'])->format('Y-m-d');
-        $workStart = Carbon::parse($date.' 09:00');
-        $workEnd = Carbon::parse($date.' 18:00');
+        $workStart = Carbon::parse($date.' '.self::WORK_START);
+        $workEnd = Carbon::parse($date.' '.self::WORK_END);
+        $now = now();
         $slots = [];
 
         for ($start = $workStart->copy(); $start->copy()->addMinutes($duration)->lte($workEnd); $start->addMinutes(30)) {
+            if ($start->lte($now)) {
+                continue;
+            }
+
             $candidate = [
                 'datum' => $date,
                 'vreme_pocetka' => $start->format('H:i'),
@@ -199,6 +209,26 @@ class TerminController extends Controller
         if ($this->hasOverlap($data, $ignore)) {
             throw ValidationException::withMessages([
                 'vreme_pocetka' => 'Izabrani zaposleni vec ima termin u tom periodu.',
+            ]);
+        }
+    }
+
+    private function ensureBookableTime(array $data): void
+    {
+        $start = Carbon::parse($data['datum'].' '.$data['vreme_pocetka']);
+        $end = Carbon::parse($data['datum'].' '.$data['vreme_zavrsetka']);
+        $workStart = Carbon::parse($data['datum'].' '.self::WORK_START);
+        $workEnd = Carbon::parse($data['datum'].' '.self::WORK_END);
+
+        if ($start->lte(now())) {
+            throw ValidationException::withMessages([
+                'vreme_pocetka' => 'Termin mora biti zakazan u buducnosti. Nije moguce zakazati datum ili vreme koje je vec proslo.',
+            ]);
+        }
+
+        if ($start->lt($workStart) || $end->gt($workEnd)) {
+            throw ValidationException::withMessages([
+                'vreme_pocetka' => 'Termin mora biti u okviru radnog vremena od 08:00 do 20:00.',
             ]);
         }
     }

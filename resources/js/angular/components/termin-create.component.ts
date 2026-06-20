@@ -41,7 +41,7 @@ import { ZaposleniService } from '../services/zaposleni.service';
                 </div>
                 <div class="col-md-4">
                     <label>Datum</label>
-                    <input class="form-control" type="date" name="datum" [(ngModel)]="form.datum" (change)="loadSlots()" required>
+                    <input class="form-control" type="date" name="datum" [(ngModel)]="form.datum" [min]="today" (change)="loadSlots()" required>
                 </div>
                 <div class="col-md-4">
                     <label>Dostupno vreme</label>
@@ -70,13 +70,14 @@ export class TerminCreateComponent implements OnInit {
     zaposleni: Zaposleni[] = [];
     usluge: Usluga[] = [];
     slots: DostupanTermin[] = [];
+    today = this.localDate();
     loading = false;
     errors: string[] = [];
     form = {
         klijent_id: null as number | null,
         zaposleni_id: null as number | null,
         usluga_id: null as number | null,
-        datum: new Date().toISOString().slice(0, 10),
+        datum: this.localDate(),
         vreme_pocetka: '',
         napomena: '',
     };
@@ -90,13 +91,26 @@ export class TerminCreateComponent implements OnInit {
     }
 
     loadSlots(): void {
+        this.errors = [];
+        this.form.vreme_pocetka = '';
+
         if (! this.form.datum || ! this.form.zaposleni_id || ! this.form.usluga_id) {
             this.slots = [];
             return;
         }
 
         this.terminiService.dostupniTermini(this.form.datum, this.form.zaposleni_id, this.form.usluga_id)
-            .subscribe((response) => this.slots = response.data);
+            .subscribe({
+                next: (response) => this.slots = response.data,
+                error: (error) => {
+                    this.slots = [];
+                    const bag = error.error?.errors || {};
+                    this.errors = Object.values(bag).flat() as string[];
+                    if (! this.errors.length) {
+                        this.errors = [error.error?.message || 'Nema dostupnih termina za izabrani datum.'];
+                    }
+                },
+            });
     }
 
     submit(): void {
@@ -123,5 +137,13 @@ export class TerminCreateComponent implements OnInit {
             },
             complete: () => this.loading = false,
         });
+    }
+
+    private localDate(date = new Date()): string {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
     }
 }

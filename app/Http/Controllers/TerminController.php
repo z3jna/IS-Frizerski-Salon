@@ -15,6 +15,9 @@ use Illuminate\View\View;
 
 class TerminController extends Controller
 {
+    private const WORK_START = '08:00';
+    private const WORK_END = '20:00';
+
     public function index(): View
     {
         $user = auth()->user();
@@ -40,6 +43,7 @@ class TerminController extends Controller
         }
 
         $data['vreme_zavrsetka'] = $this->calculateEndTime($data['datum'], $data['vreme_pocetka'], (int) Usluga::findOrFail($data['usluga_id'])->trajanje_minuta);
+        $this->ensureBookableTime($data);
         $this->ensureNoOverlap($data);
 
         Termin::create($data);
@@ -73,6 +77,7 @@ class TerminController extends Controller
 
         $data = $this->validated($request, true);
         $data['vreme_zavrsetka'] = $this->calculateEndTime($data['datum'], $data['vreme_pocetka'], (int) Usluga::findOrFail($data['usluga_id'])->trajanje_minuta);
+        $this->ensureBookableTime($data);
         $this->ensureNoOverlap($data, $termini);
 
         $termini->update($data);
@@ -139,6 +144,26 @@ class TerminController extends Controller
         if ($overlap) {
             throw ValidationException::withMessages([
                 'vreme_pocetka' => 'Izabrani zaposleni već ima termin u tom periodu.',
+            ]);
+        }
+    }
+
+    private function ensureBookableTime(array $data): void
+    {
+        $start = Carbon::parse($data['datum'].' '.$data['vreme_pocetka']);
+        $end = Carbon::parse($data['datum'].' '.$data['vreme_zavrsetka']);
+        $workStart = Carbon::parse($data['datum'].' '.self::WORK_START);
+        $workEnd = Carbon::parse($data['datum'].' '.self::WORK_END);
+
+        if ($start->lte(now())) {
+            throw ValidationException::withMessages([
+                'vreme_pocetka' => 'Termin mora biti zakazan u buducnosti. Nije moguce zakazati datum ili vreme koje je vec proslo.',
+            ]);
+        }
+
+        if ($start->lt($workStart) || $end->gt($workEnd)) {
+            throw ValidationException::withMessages([
+                'vreme_pocetka' => 'Termin mora biti u okviru radnog vremena od 08:00 do 20:00.',
             ]);
         }
     }
