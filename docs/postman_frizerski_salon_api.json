@@ -1,122 +1,216 @@
 {
   "info": {
-    "name": "Frizerski salon API - testovi",
+    "_postman_id": "f4f9f468-2d2a-4f62-8d51-2026salonapi",
+    "name": "Frizerski salon - autentifikacija i zakazivanje",
+    "description": "Testovi za dva projektna procesa: registracija/prijava i zakazivanje termina. Kolekcija koristi isključivo sedam aktuelnih JSON API ruta.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     { "key": "base_url", "value": "http://127.0.0.1:8000" },
     { "key": "token", "value": "" },
-    { "key": "klijent_id", "value": "1" },
-    { "key": "zaposleni_id", "value": "1" },
-    { "key": "usluga_id", "value": "1" },
-    { "key": "termin_id", "value": "1" }
+    { "key": "client_email", "value": "ana@salon.test" },
+    { "key": "client_password", "value": "password" },
+    { "key": "zaposleni_id", "value": "" },
+    { "key": "usluga_id", "value": "" },
+    { "key": "booking_date", "value": "" },
+    { "key": "booking_time", "value": "" }
   ],
   "item": [
     {
-      "name": "POST /api/register",
-      "request": {
-        "method": "POST",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": "{{base_url}}/api/register",
-        "body": {
-          "mode": "raw",
-          "raw": "{\"ime\":\"Test\",\"prezime\":\"Klijent\",\"email\":\"test.klijent{{$timestamp}}@salon.test\",\"telefon\":\"060/100-200\",\"password\":\"password\",\"password_confirmation\":\"password\"}"
+      "name": "Proces 1 - registracija i prijava",
+      "item": [
+        {
+          "name": "01 - Registracija sa lozinkom od 8 karaktera",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('Status je 201', () => pm.response.to.have.status(201));",
+              "pm.test('Vraćen je token i klijentski profil', () => { const j = pm.response.json(); pm.expect(j.token).to.be.a('string').and.not.empty; pm.expect(j.user.role).to.eql('klijent'); pm.expect(j.user.klijent).to.be.an('object'); });"
+            ] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"ime\": \"Postman\",\n  \"prezime\": \"Klijent\",\n  \"email\": \"postman{{$timestamp}}@salon.test\",\n  \"password\": \"12345678\",\n  \"password_confirmation\": \"12345678\"\n}" },
+            "url": "{{base_url}}/api/register"
+          }
+        },
+        {
+          "name": "02 - Registracija sa lozinkom od 7 karaktera",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status je 422', () => pm.response.to.have.status(422));",
+            "pm.test('Greška pripada polju password', () => pm.expect(pm.response.json().errors.password).to.be.an('array'));"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"ime\": \"Kratka\",\n  \"prezime\": \"Lozinka\",\n  \"email\": \"kratka{{$timestamp}}@salon.test\",\n  \"password\": \"1234567\",\n  \"password_confirmation\": \"1234567\"\n}" },
+            "url": "{{base_url}}/api/register"
+          }
+        },
+        {
+          "name": "03 - Registracija sa zauzetim emailom",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status je 422', () => pm.response.to.have.status(422));",
+            "pm.test('Email ima unique grešku', () => pm.expect(pm.response.json().errors.email).to.be.an('array'));"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"ime\": \"Ana\",\n  \"prezime\": \"Duplikat\",\n  \"email\": \"{{client_email}}\",\n  \"password\": \"password\",\n  \"password_confirmation\": \"password\"\n}" },
+            "url": "{{base_url}}/api/register"
+          }
+        },
+        {
+          "name": "04 - Prijava sa validnim podacima",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status je 200', () => pm.response.to.have.status(200));",
+            "pm.test('Token je sačuvan', () => { const j = pm.response.json(); pm.expect(j.token).to.be.a('string').and.not.empty; pm.collectionVariables.set('token', j.token); });"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{client_email}}\",\n  \"password\": \"{{client_password}}\"\n}" },
+            "url": "{{base_url}}/api/login"
+          }
+        },
+        {
+          "name": "05 - Prijava sa pogrešnom lozinkom",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status je 422', () => pm.response.to.have.status(422));",
+            "pm.test('Kredencijali su odbijeni', () => pm.expect(pm.response.json().errors.email).to.be.an('array'));"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{client_email}}\",\n  \"password\": \"pogresna-lozinka\"\n}" },
+            "url": "{{base_url}}/api/login"
+          }
+        },
+        {
+          "name": "06 - Zaštićena ruta bez Bearer tokena",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status je 401', () => pm.response.to.have.status(401));",
+            "pm.test('Postoji poruka o tokenu', () => pm.expect(pm.response.json().message).to.include('Token'));"
+          ] } }],
+          "request": { "method": "GET", "header": [{ "key": "Accept", "value": "application/json" }], "url": "{{base_url}}/api/user" }
+        },
+        {
+          "name": "07 - Trenutni korisnik sa tokenom",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status je 200', () => pm.response.to.have.status(200));",
+            "pm.test('Prijavljen je klijent', () => pm.expect(pm.response.json().user.role).to.eql('klijent'));"
+          ] } }],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/api/user"
+          }
         }
-      }
+      ]
     },
     {
-      "name": "POST /api/login",
-      "event": [{
-        "listen": "test",
-        "script": {
-          "exec": [
-            "pm.test('Login vraca token', function () {",
-            "  pm.response.to.have.status(200);",
-            "  pm.expect(pm.response.json().token).to.be.a('string');",
-            "});",
-            "pm.collectionVariables.set('token', pm.response.json().token);"
+      "name": "Proces 2 - zakazivanje termina",
+      "item": [
+        {
+          "name": "08 - Opcije zakazivanja",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status je 200', () => pm.response.to.have.status(200));",
+            "pm.test('Postoje usluge i zaposleni', () => { const d = pm.response.json().data; pm.expect(d.usluge.length).to.be.above(0); pm.expect(d.zaposleni.length).to.be.above(0); pm.collectionVariables.set('usluga_id', d.usluge[0].id); pm.collectionVariables.set('zaposleni_id', d.zaposleni[0].id); });"
+          ] } }],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/api/zakazivanje/opcije"
+          }
+        },
+        {
+          "name": "09 - Dostupni termini za prošli datum",
+          "event": [
+            { "listen": "prerequest", "script": { "exec": ["const d = new Date(); d.setDate(d.getDate() - 1); pm.variables.set('past_date', d.toISOString().slice(0, 10));"] } },
+            { "listen": "test", "script": { "exec": ["pm.test('Status je 422', () => pm.response.to.have.status(422));", "pm.test('Datum je nevalidan', () => pm.expect(pm.response.json().errors.datum).to.be.an('array'));"] } }
           ],
-          "type": "text/javascript"
-        }
-      }],
-      "request": {
-        "method": "POST",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": "{{base_url}}/api/login",
-        "body": {
-          "mode": "raw",
-          "raw": "{\"email\":\"admin@salon.test\",\"password\":\"password\"}"
-        }
-      }
-    },
-    {
-      "name": "GET /api/usluge",
-      "request": {
-        "method": "GET",
-        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-        "url": "{{base_url}}/api/usluge"
-      }
-    },
-    {
-      "name": "POST /api/termini",
-      "event": [{
-        "listen": "test",
-        "script": {
-          "exec": [
-            "pm.test('Termin je kreiran', function () { pm.response.to.have.status(201); });",
-            "pm.collectionVariables.set('termin_id', pm.response.json().data.id);"
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/api/zakazivanje/dostupni-termini?datum={{past_date}}&zaposleni_id={{zaposleni_id}}&usluga_id={{usluga_id}}"
+          }
+        },
+        {
+          "name": "10 - Zakazivanje sa nepotpunim podacima",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status je 422', () => pm.response.to.have.status(422));", "pm.test('Nedostaju obavezna polja', () => { const e = pm.response.json().errors; pm.expect(e.vreme_pocetka).to.be.an('array'); pm.expect(e.zaposleni_id).to.be.an('array'); pm.expect(e.usluga_id).to.be.an('array'); });"] } }],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"datum\": \"2099-01-01\"\n}" },
+            "url": "{{base_url}}/api/zakazivanje/termini"
+          }
+        },
+        {
+          "name": "11 - Lista slobodnih termina",
+          "event": [
+            { "listen": "prerequest", "script": { "exec": ["const d = new Date(); d.setDate(d.getDate() + 30); pm.collectionVariables.set('booking_date', d.toISOString().slice(0, 10));"] } },
+            { "listen": "test", "script": { "exec": [
+              "pm.test('Status je 200', () => pm.response.to.have.status(200));",
+              "pm.test('Slotovi su u okviru 08:00-20:00', () => { const slots = pm.response.json().data; pm.expect(slots.length).to.be.above(0); slots.forEach(s => { pm.expect(s.vreme_pocetka >= '08:00').to.be.true; pm.expect(s.vreme_zavrsetka <= '20:00').to.be.true; }); pm.collectionVariables.set('booking_time', slots[0].vreme_pocetka); });"
+            ] } }
           ],
-          "type": "text/javascript"
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/api/zakazivanje/dostupni-termini?datum={{booking_date}}&zaposleni_id={{zaposleni_id}}&usluga_id={{usluga_id}}"
+          }
+        },
+        {
+          "name": "12 - Uspešno zakazivanje",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status je 201', () => pm.response.to.have.status(201));", "pm.test('Termin pripada prijavljenom klijentu', () => { const d = pm.response.json().data; pm.expect(d.status).to.eql('zakazan'); pm.expect(d.klijent_id).to.be.a('number'); });"] } }],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"datum\": \"{{booking_date}}\",\n  \"vreme_pocetka\": \"{{booking_time}}\",\n  \"zaposleni_id\": {{zaposleni_id}},\n  \"usluga_id\": {{usluga_id}},\n  \"napomena\": \"Postman test\"\n}" },
+            "url": "{{base_url}}/api/zakazivanje/termini"
+          }
+        },
+        {
+          "name": "13 - Preklapanje termina",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status je 422', () => pm.response.to.have.status(422));", "pm.test('Prijavljena je greška preklapanja', () => pm.expect(pm.response.json().errors.vreme_pocetka).to.be.an('array'));"] } }],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"datum\": \"{{booking_date}}\",\n  \"vreme_pocetka\": \"{{booking_time}}\",\n  \"zaposleni_id\": {{zaposleni_id}},\n  \"usluga_id\": {{usluga_id}}\n}" },
+            "url": "{{base_url}}/api/zakazivanje/termini"
+          }
+        },
+        {
+          "name": "14 - Termin pre radnog vremena",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status je 422', () => pm.response.to.have.status(422));", "pm.test('Vreme je odbijeno', () => pm.expect(pm.response.json().errors.vreme_pocetka).to.be.an('array'));"] } }],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"datum\": \"{{booking_date}}\",\n  \"vreme_pocetka\": \"07:30\",\n  \"zaposleni_id\": {{zaposleni_id}},\n  \"usluga_id\": {{usluga_id}}\n}" },
+            "url": "{{base_url}}/api/zakazivanje/termini"
+          }
+        },
+        {
+          "name": "15 - Termin posle radnog vremena",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status je 422', () => pm.response.to.have.status(422));", "pm.test('Vreme je odbijeno', () => pm.expect(pm.response.json().errors.vreme_pocetka).to.be.an('array'));"] } }],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Accept", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"datum\": \"{{booking_date}}\",\n  \"vreme_pocetka\": \"20:00\",\n  \"zaposleni_id\": {{zaposleni_id}},\n  \"usluga_id\": {{usluga_id}}\n}" },
+            "url": "{{base_url}}/api/zakazivanje/termini"
+          }
         }
-      }],
-      "request": {
-        "method": "POST",
-        "header": [
-          { "key": "Authorization", "value": "Bearer {{token}}" },
-          { "key": "Content-Type", "value": "application/json" }
-        ],
-        "url": "{{base_url}}/api/termini",
-        "body": {
-          "mode": "raw",
-          "raw": "{\"datum\":\"2026-07-20\",\"vreme_pocetka\":\"09:00\",\"klijent_id\":{{klijent_id}},\"zaposleni_id\":{{zaposleni_id}},\"usluga_id\":{{usluga_id}},\"napomena\":\"Postman test\"}"
-        }
-      }
-    },
-    {
-      "name": "GET /api/termini/klijent/{id}",
-      "request": {
-        "method": "GET",
-        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-        "url": "{{base_url}}/api/termini/klijent/{{klijent_id}}"
-      }
-    },
-    {
-      "name": "GET /api/termini/zaposleni/{id}",
-      "request": {
-        "method": "GET",
-        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-        "url": "{{base_url}}/api/termini/zaposleni/{{zaposleni_id}}"
-      }
-    },
-    {
-      "name": "PUT /api/termini/{id}",
-      "request": {
-        "method": "PUT",
-        "header": [
-          { "key": "Authorization", "value": "Bearer {{token}}" },
-          { "key": "Content-Type", "value": "application/json" }
-        ],
-        "url": "{{base_url}}/api/termini/{{termin_id}}",
-        "body": { "mode": "raw", "raw": "{\"status\":\"otkazan\"}" }
-      }
-    },
-    {
-      "name": "DELETE /api/termini/{id}",
-      "request": {
-        "method": "DELETE",
-        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-        "url": "{{base_url}}/api/termini/{{termin_id}}"
-      }
+      ]
     }
   ]
 }

@@ -13,8 +13,6 @@
         "@angular/forms": "^18.2.14",
         "@angular/platform-browser": "^18.2.14",
         "@angular/router": "^18.2.14",
-        "@popperjs/core": "^2.11.8",
-        "axios": "^1.7.4",
         "bootstrap": "^5.3.3",
         "concurrently": "^8.2.2",
         "laravel-vite-plugin": "^1.0.5",

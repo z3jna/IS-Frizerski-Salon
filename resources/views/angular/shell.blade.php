@@ -1,11 +1,12 @@
-@extends('layouts.app')
-
-@section('content')
-<script>
-    window.salonRoutes = {
-        phpBase: @json(\App\Support\FrontendUrl::appBase()),
-        angularBase: @json(\App\Support\FrontendUrl::angularBase()),
-    };
-</script>
-<app-root></app-root>
-@endsection
+<!doctype html>
+<html lang="sr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ config('app.name', 'Frizerski salon') }}</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body>
+    <app-root></app-root>
+</body>
+</html>

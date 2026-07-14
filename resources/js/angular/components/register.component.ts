@@ -1,15 +1,21 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Component({
     selector: 'register-component',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, RouterLink],
     template: `
-        <form class="angular-card" (ngSubmit)="submit()">
-            <h2>Registracija klijenta</h2>
+        <section class="angular-page">
+        <header class="angular-heading">
+            <p class="eyebrow">Proces 1</p>
+            <h1>Registracija klijenta</h1>
+            <p>Kreirajte klijentski nalog i nastavite na zakazivanje.</p>
+        </header>
+        <form class="angular-card angular-wide" (ngSubmit)="submit()">
             <div class="alert alert-danger" *ngIf="errors.length">
                 <div *ngFor="let item of errors">{{ item }}</div>
             </div>
@@ -23,13 +29,14 @@ import { AuthService } from '../services/auth.service';
                 <div class="col-md-6"><label>Potvrda lozinke</label><input class="form-control" type="password" name="password_confirmation" [(ngModel)]="form.password_confirmation" required></div>
             </div>
             <button class="btn btn-primary w-100 mt-3" [disabled]="loading">{{ loading ? 'Cuvanje...' : 'Registruj se' }}</button>
+            <p class="form-link">Već imate nalog? <a routerLink="/login">Prijavite se</a>.</p>
         </form>
+        </section>
     `,
 })
 export class RegisterComponent {
     private readonly auth = inject(AuthService);
-    @Input() sessionMode = false;
-    @Output() registered = new EventEmitter<void>();
+    private readonly router = inject(Router);
     loading = false;
     errors: string[] = [];
     form = {
@@ -45,14 +52,9 @@ export class RegisterComponent {
     submit(): void {
         this.loading = true;
         this.errors = [];
-        const request = this.sessionMode ? this.auth.sessionRegister(this.form) : this.auth.register(this.form);
-
-        request.subscribe({
-            next: (response) => {
-                this.registered.emit();
-                if (this.sessionMode && 'redirect' in response) {
-                    window.location.href = response.redirect;
-                }
+        this.auth.register(this.form).subscribe({
+            next: () => {
+                this.router.navigateByUrl('/termini/create');
             },
             error: (error) => {
                 const bag = error.error?.errors || {};
