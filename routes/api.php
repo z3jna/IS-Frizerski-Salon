@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\TerminController;
-use App\Http\Controllers\Api\UslugaController;
-use App\Http\Controllers\Api\ZaposleniController;
+use App\Http\Controllers\Api\Angular\AuthController;
+use App\Http\Controllers\Api\Angular\TerminController;
+use App\Http\Controllers\Api\Angular\UslugaController;
+use App\Http\Controllers\Api\Angular\ZaposleniController;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Route;
 

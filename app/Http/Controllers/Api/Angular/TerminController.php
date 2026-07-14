@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Angular;
 
 use App\Http\Controllers\Controller;
 use App\Models\Termin;
@@ -14,6 +14,7 @@ use Illuminate\Validation\ValidationException;
 class TerminController extends Controller
 {
     private const WORK_START = '08:00';
+
     private const WORK_END = '20:00';
 
     public function index(Request $request): JsonResponse
