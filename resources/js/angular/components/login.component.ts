@@ -22,6 +22,7 @@ import { AuthService } from '../services/auth.service';
                 <label for="login-password">Lozinka</label>
                 <input id="login-password" class="form-control" type="password" name="password" [(ngModel)]="password" required>
                 <button class="btn btn-primary w-100 mt-3" [disabled]="loading">{{ loading ? 'Prijava...' : 'Prijavi se' }}</button>
+                <a class="btn btn-outline-secondary w-100 mt-2" href="/">Početna</a>
                 <p class="form-link">Nemate nalog? <a routerLink="/register">Registrujte se</a>.</p>
             </form>
         </section>

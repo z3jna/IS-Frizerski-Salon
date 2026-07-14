@@ -53,6 +53,8 @@ class AuthController extends Controller
         });
 
         event(new Registered($user));
+        Auth::guard('web')->login($user);
+        $request->session()->regenerate();
 
         return response()->json([
             'message' => 'Registracija je uspesna.',
@@ -75,6 +77,8 @@ class AuthController extends Controller
             ], 422);
         }
 
+        $request->session()->regenerate();
+
         $user = User::where('email', $credentials['email'])->firstOrFail();
         $token = Str::random(80);
         $user->forceFill(['api_token' => $token])->save();
@@ -89,6 +93,9 @@ class AuthController extends Controller
     public function logout(Request $request): JsonResponse
     {
         $request->user()->forceFill(['api_token' => null])->save();
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return response()->json(['message' => 'Odjava je uspesna.']);
     }

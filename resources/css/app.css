@@ -167,29 +167,6 @@ a:hover {
     top: 7px;
 }
 
-.app-nav-links {
-    display: flex;
-    align-items: center;
-    gap: .35rem;
-    margin-left: auto;
-}
-
-.app-nav-links .nav-link {
-    border-radius: 6px;
-    color: rgba(255, 255, 255, .78);
-    font-size: .94rem;
-    font-weight: 700;
-    padding: .48rem .7rem;
-}
-
-.app-nav-links .nav-link:hover,
-.app-nav-links .nav-link:focus,
-.app-nav-links .nav-link.active {
-    background: rgba(245, 196, 81, .16);
-    color: #ffffff;
-    text-decoration: none;
-}
-
 .angular-page {
     display: grid;
     gap: 1rem;
@@ -347,24 +324,6 @@ a:hover {
 }
 
 @media (max-width: 575.98px) {
-    .app-navbar .container-fluid {
-        flex-wrap: nowrap;
-    }
-
-    .app-navbar .navbar-brand {
-        max-width: 45vw;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .app-nav-links {
-        gap: .1rem;
-    }
-
-    .app-nav-links .nav-link {
-        padding-inline: .45rem;
-    }
-
     .angular-heading,
     .angular-card {
         padding: 1rem;
