@@ -1,79 +1,101 @@
 # Informacioni sistem za frizerski salon
 
-Projekat za predmet Programiranje internet aplikacija realizuje dva procesa iz SSA modela:
+Laravel aplikacija za upravljanje klijentima, zaposlenima, uslugama, terminima, tretmanima, fotografijama, računima, uplatama, podsetnicima i izveštajima.
 
-1. registraciju i prijavu klijenta sa validacijom unosa;
-2. zakazivanje termina sa proverom raspoloživosti i poslovnih pravila.
-
-Arhitektura je odvojena: Laravel 11 vraća isključivo JSON odgovore, a Angular 18 predstavlja jedini korisnički interfejs. Modeli, migracije i seed podaci šireg EER modela ostaju u projektu, ali nisu izloženi kao dodatni UI procesi.
-
-## Pokretanje
+## Lokalno pokretanje
 
 ```bash
 composer install
 npm install
+npm run build
 php artisan migrate --seed
 php artisan serve
 ```
 
-U drugom terminalu pokrenuti Angular/Vite frontend:
+Angular se koristi samo za prijavu i zakazivanje termina u okviru istog Laravel projekta. Vite dev server za Angular assete pokrece se na portu 4200:
 
 ```bash
 npm run dev
 ```
 
-Frontend je dostupan na `http://127.0.0.1:4200`, a Laravel API na `http://127.0.0.1:8000`.
-
-Angular rute:
-
-- `/login`
-- `/register`
-- `/termini/create`
-
-## API
-
-Javne rute:
-
-- `POST /api/register`
-- `POST /api/login`
-
-Rute zaštićene Bearer tokenom:
-
-- `POST /api/logout`
-- `GET /api/user`
-- `GET /api/zakazivanje/opcije`
-- `GET /api/zakazivanje/dostupni-termini`
-- `POST /api/zakazivanje/termini`
-
-Angular čuva token u `localStorage` pod ključem `salon_api_token`. Interceptor ga šalje kroz `Authorization: Bearer <token>`. Klijent ne šalje `klijent_id`; backend ga određuje iz tokena.
-
-## Poslovna pravila zakazivanja
-
-- termin mora biti u budućnosti;
-- radno vreme je od 08:00 do 20:00;
-- završetak se računa iz trajanja izabrane usluge;
-- usluga mora biti dostupna;
-- zaposleni ne može imati preklopljene aktivne termine;
-- termin može zakazati samo prijavljeni klijent.
-
-## Testiranje
-
-```bash
-php artisan test
-npm run build
-php artisan route:list --except-vendor
-```
-
-Feature paket trenutno sadrži 15 prolaznih testova sa 55 assertiona. Postman kolekcija sa 15 test primera nalazi se u `docs/postman_frizerski_salon_api.json`.
-
-Demo klijentski nalog:
+Zatim otvorite:
 
 ```text
-ana@salon.test / password
+http://127.0.0.1:4200/login
+http://127.0.0.1:4200/register
+http://127.0.0.1:4200/termini/create
 ```
 
-Detaljan opis procesa, klasa ekvivalencije i graničnih vrednosti nalazi se u `docs/implementacija_i_testiranje.md` i Word dokumentaciji.
+PHP stranice ostaju na `http://127.0.0.1:8000`, a Laravel rute `/login`, `/register` i `/termini/create` lokalno preusmeravaju na Angular dev server.
 
-## Railway
+JSON API rute su definisane u `routes/api.php`. Detalji i Postman kolekcija su u `docs/implementacija_i_testiranje.md` i `docs/postman_frizerski_salon_api.json`.
 
-Build koristi `npm run build`, a Laravel u produkciji servira isti Angular shell za `/`, `/login`, `/register` i `/termini/create`. Poseban `ANGULAR_URL` nije potreban.
+Ako koristite upload fotografija, pokrenite i:
+
+```bash
+php artisan storage:link
+```
+
+## Početni nalozi
+
+- Administrator: `admin@salon.test` / `password`
+- Zaposleni: `mila@salon.test` / `password`
+- Zaposleni: `marko@salon.test` / `password`
+- Zaposleni: `ivana@salon.test` / `password`
+- Zaposleni: `stefan@salon.test` / `password`
+- Klijent: `ana@salon.test` / `password`
+- Klijent: `jelena@salon.test` / `password`
+- Klijent: `marija@salon.test` / `password`
+- Klijent: `sofija@salon.test` / `password`
+- Klijent: `nikola@salon.test` / `password`
+- Klijent: `tamara@salon.test` / `password`
+- Klijent: `katarina@salon.test` / `password`
+- Klijent: `lazar@salon.test` / `password`
+- Klijent: `milica@salon.test` / `password`
+- Klijent: `sanja@salon.test` / `password`
+
+Seed pravi demo bazu sa 15 korisnika, 4 zaposlena, 10 klijenata, 16 usluga, 20 termina, 7 realizovanih tretmana, fotografijama tretmana, računima, uplatama i podsetnicima.
+
+Za potpuno čistu bazu pokrenite:
+
+```bash
+php artisan migrate:fresh --seed --force
+```
+
+Za produkciju/Railway koristite ovu komandu samo ako želite da obrišete sve postojeće podatke i napravite novu demo bazu od nule.
+
+## Railway deploy
+
+Repo je spreman za Railway preko `railway.toml`.
+
+1. U Railway napraviti novi projekat i povezati GitHub repo.
+2. Dodati PostgreSQL ili MySQL servis.
+3. U app servisu dodati varijable:
+
+```env
+APP_NAME="Frizerski Salon"
+APP_ENV=production
+APP_KEY=base64:GENERISANI_APP_KEY
+APP_DEBUG=false
+APP_URL=https://tvoj-domen.up.railway.app
+LOG_CHANNEL=stderr
+LOG_STDERR_FORMATTER=Monolog\\Formatter\\JsonFormatter
+DB_CONNECTION=pgsql
+DB_URL=${{Postgres.DATABASE_URL}}
+CACHE_STORE=file
+SESSION_DRIVER=file
+QUEUE_CONNECTION=sync
+MAIL_MAILER=log
+```
+
+Za Railway deployment na jednom servisu `ANGULAR_URL` ne treba podesavati: Angular login, registracija i zakazivanje se serviraju preko istog `APP_URL` domena kroz Laravel build assete. `ANGULAR_URL` koristite samo ako Angular nekad odvojite na poseban domen.
+
+`APP_KEY` generišite lokalno sa:
+
+```bash
+php artisan key:generate --show
+```
+
+Railway build pokreće `npm run build`, a pre deploy skripta pokreće `php artisan migrate --force --seed` i Laravel cache komande. Seeder je idempotentan, pa redeploy ne pravi duplikate.
+
+Za javni URL u Railway dashboard-u otvorite service settings i generišite domain u Networking sekciji.

@@ -1,111 +1,74 @@
 # Implementacija i testiranje
 
-## Izabrani procesi
+## Pokretanje
 
-### Proces 1: registracija i prijava klijenta
+Backend:
 
-Angular forme prikupljaju korisnički unos i šalju JSON Laravel API-ju. Backend validira obavezna polja, format i jedinstvenost emaila, potvrdu lozinke i minimalnu dužinu od 8 karaktera. Uspešna registracija u jednoj transakciji kreira `users` i `klijenti` zapis. Uspešna prijava proverava hash lozinke i izdaje novi API token.
+```bash
+composer install
+php artisan migrate --seed
+php artisan serve
+```
 
-### Proces 2: zakazivanje termina
+Angular frontend u Laravel aplikaciji:
 
-Proces povezuje klijenta, zaposlenog, uslugu, datum i vreme. Angular najpre učitava dostupne usluge i zaposlene, zatim za izabranu kombinaciju traži slobodne slotove. Laravel računa završetak prema trajanju usluge i odbija prošlo vreme, termin van radnog vremena ili preklapanje.
+```bash
+npm install
+npm run dev
+```
 
-## Arhitektura
+Angular delovi su integrisani u isti projekat. Lokalno se otvaraju preko Vite dev servera: `http://127.0.0.1:4200/login`, `http://127.0.0.1:4200/register` i `http://127.0.0.1:4200/termini/create`. Laravel rute na `8000` preusmeravaju na te Angular stranice. Na Railway produkciji isti ekrani se serviraju preko `APP_URL` domena kroz `npm run build`.
 
-- Laravel REST API backend u `routes/api.php`;
-- Angular frontend sa tri standalone komponente i Angular Routerom;
-- JSON komunikacija preko `HttpClient`;
-- Bearer autentifikacija preko `api.token` middleware-a;
-- `AuthService` za autentifikaciju i `BookingService` za ceo proces zakazivanja.
+## API autentifikacija
 
-`routes/web.php` ima samo četiri GET rute koje u produkciji serviraju Angular shell. Ne postoje Blade dashboard, CRUD stranice, Laravel auth sesija niti `/angular-*` bridge rute.
+`POST /api/login` vraca bearer token. Za zasticene rute slati header:
 
-## API ugovor
+```http
+Authorization: Bearer <token>
+Accept: application/json
+```
 
-| Metod | Ruta | Autentifikacija | Namena |
-|---|---|---|---|
-| POST | `/api/register` | javna | registracija klijenta |
-| POST | `/api/login` | javna | prijava i izdavanje tokena |
-| POST | `/api/logout` | Bearer | poništavanje tokena |
-| GET | `/api/user` | Bearer | provera tokena i trenutni korisnik |
-| GET | `/api/zakazivanje/opcije` | Bearer | dostupne usluge i zaposleni |
-| GET | `/api/zakazivanje/dostupni-termini` | Bearer | slobodni slotovi |
-| POST | `/api/zakazivanje/termini` | Bearer | kreiranje termina |
-
-Primer zahteva za zakazivanje:
+Primer zahteva:
 
 ```json
 {
-  "datum": "2026-08-15",
-  "vreme_pocetka": "10:00",
-  "zaposleni_id": 1,
-  "usluga_id": 1,
-  "napomena": "Prvi dolazak"
+  "email": "admin@salon.test",
+  "password": "password"
 }
 ```
 
-`klijent_id` nije deo ulaza. API ga uzima iz korisnika pronađenog pomoću Bearer tokena.
+Primer odgovora:
 
-## Klase ekvivalencije
-
-### Registracija i prijava
-
-- validan jedinstven email / nevalidan format / već zauzet email;
-- lozinka sa najmanje 8 karaktera / lozinka kraća od 8;
-- podudarna / nepodudarna potvrda lozinke;
-- tačni / netačni kredencijali;
-- validan / nedostajući / neispravan token.
-
-### Zakazivanje
-
-- budući / prošli datum;
-- potpuno / nepotpuno popunjen zahtev;
-- dostupna / nedostupna usluga;
-- slobodan / preklopljen termin;
-- vreme unutar / pre / posle radnog vremena;
-- klijent / druga uloga korisnika.
-
-## Granične vrednosti
-
-- dužina lozinke: 7 je nevalidno, 8 je validno;
-- početak radnog vremena: 08:00 je validan;
-- kraj radnog vremena: završetak tačno u 20:00 je validan, završetak posle 20:00 nije;
-- današnji termin mora početi strogo posle trenutnog vremena;
-- početak drugog termina tačno na završetku prvog ne predstavlja preklapanje.
-
-## Automatizovani testovi
-
-Komanda:
-
-```bash
-php artisan test
+```json
+{
+  "message": "Prijava je uspesna.",
+  "token": "GENERISANI_TOKEN",
+  "user": {
+    "id": 1,
+    "email": "admin@salon.test",
+    "role": "administrator"
+  }
+}
 ```
 
-Poslednje izvršenje nakon refaktorisanja: **15 testova je prošlo, 55 assertiona, 0 padova**. Testovi koriste SQLite bazu u memoriji i `RefreshDatabase`, tako da ne menjaju razvojne podatke.
+## API rute
 
-Obuhvaćeni su registracija na granici od 8 karaktera, lozinka od 7 karaktera, duplikat emaila, validna i nevalidna prijava, pristup bez tokena, odjava, opcije zakazivanja, prošli datum, nepotpun unos, granice radnog vremena, uspešno zakazivanje i preklapanje.
+Autentifikacija: `POST /api/register`, `POST /api/login`, `POST /api/logout`, `GET /api/user`.
 
-## Postman i manuelno testiranje
+CRUD: `/api/klijenti`, `/api/usluge`, `/api/zaposleni`, `/api/termini`, `/api/tretmani`, `/api/racuni`.
 
-Kolekcija `docs/postman_frizerski_salon_api.json` sadrži 15 numerisanih test primera. Prvo se izvršava validna prijava koja čuva token, zatim opcije zakazivanja čuvaju ID usluge i zaposlenog, a slobodni slotovi određuju vreme za validno zakazivanje i test preklapanja.
+Raspored: `GET /api/dostupni-termini`, `GET /api/termini/klijent/{id}`, `GET /api/termini/zaposleni/{id}`.
 
-Manuelni scenario:
+## Pravila zakazivanja
 
-1. otvoriti `/register` i proveriti validne i nevalidne unose;
-2. otvoriti `/login`, proveriti pogrešnu i ispravnu lozinku;
-3. potvrditi preusmerenje na `/termini/create`;
-4. proveriti da je izbor vremena zaključan dok nisu izabrani zaposleni, usluga i datum;
-5. izabrati ponuđeni slot i zakazati termin;
-6. potvrditi poruku o uspehu i novo učitavanje slobodnih slotova;
-7. obrisati token iz `localStorage` i potvrditi povratak na login.
+Datum termina mora biti danas ili u buducnosti. Usluga, klijent i zaposleni moraju postojati. Kraj termina se racuna na osnovu trajanja usluge. Zaposleni ne moze imati dva aktivna termina koji se preklapaju. Dozvoljeni statusi su `zakazan`, `realizovan`, `otkazan`.
 
-Poslednji browser smoke test je izvršen 14.07.2026. i prošao je sve tri stranice. Potvrđeni su: greška za nevalidnu prijavu, validna prijava, zabrana pristupa zakazivanju bez tokena, odbijanje lozinke od 7 karaktera, registracija sa 8 karaktera, učitavanje opcija i slobodnih slotova i uspešno zakazivanje. Testni korisnik i termin su nakon provere uklonjeni iz razvojne baze.
+## Smoke test
 
-## Evidentirani defekti
+Provereno lokalno preko HTTP zahteva: login, `GET /api/user`, `GET /api/usluge`, `GET /api/dostupni-termini`, `POST /api/termini`, `PUT /api/termini/{id}`, `GET /api/termini/klijent/{id}`, `GET /api/termini/zaposleni/{id}`, `DELETE /api/termini/{id}`.
 
-- Uklonjen je paralelni session/token tok koji je duplirao autentifikaciju.
-- Uklonjeni su nekorišćeni Angular servisi i API CRUD rute van izabranih procesa.
-- `klijent_id` se više ne prihvata iz forme, čime je sprečeno zakazivanje u ime drugog klijenta.
-- Opcije zakazivanja vraćaju samo usluge čija je `dostupnost` uključena.
+Rezultat: svi smoke test koraci su prosli.
 
-`npm run build` prolazi. NPM audit trenutno prijavljuje 7 ranjivosti visokog nivoa u build zavisnostima; nije korišćen `npm audit fix --force` jer bi mogao uvesti breaking promene.
+## Defekti i napomene
+
+`npm audit` prijavljuje 8 ranjivosti visokog nivoa u JavaScript zavisnostima. Nije pokretan `npm audit fix --force` zato sto moze da uvede breaking promene u build alatima.

@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -67,15 +68,14 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        $user = User::where('email', $credentials['email'])->first();
-
-        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+        if (! Auth::attempt($credentials)) {
             return response()->json([
                 'message' => 'Uneti kredencijali nisu ispravni.',
                 'errors' => ['email' => ['Uneti kredencijali nisu ispravni.']],
             ], 422);
         }
 
+        $user = User::where('email', $credentials['email'])->firstOrFail();
         $token = Str::random(80);
         $user->forceFill(['api_token' => $token])->save();
 
