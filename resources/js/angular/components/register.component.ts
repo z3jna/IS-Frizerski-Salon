@@ -11,7 +11,6 @@ import { AuthService } from '../services/auth.service';
     template: `
         <section class="angular-page angular-page--wide">
             <header class="angular-heading">
-                <p class="eyebrow">Proces 1</p>
                 <h1>Registracija klijenta</h1>
                 <p>Kreirajte klijentski nalog i nastavite na zakazivanje.</p>
             </header>

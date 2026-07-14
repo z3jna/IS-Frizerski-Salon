@@ -11,7 +11,6 @@ import { BookingService } from '../services/booking.service';
     template: `
         <section class="angular-page angular-page--wide">
             <header class="angular-heading">
-                <p class="eyebrow">Proces 2</p>
                 <h1>Zakazivanje termina</h1>
                 <p>Izaberite uslugu, zaposlenog, datum i jedan od slobodnih termina.</p>
             </header>

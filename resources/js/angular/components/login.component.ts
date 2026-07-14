@@ -11,9 +11,7 @@ import { AuthService } from '../services/auth.service';
     template: `
         <section class="angular-page">
             <header class="angular-heading">
-                <p class="eyebrow">Proces 1</p>
                 <h1>Prijava klijenta</h1>
-                <p>Prijavite se API nalogom da biste zakazali termin.</p>
             </header>
             <form class="angular-card" (ngSubmit)="submit()">
                 <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
