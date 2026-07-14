@@ -167,6 +167,40 @@ a:hover {
     top: 7px;
 }
 
+.app-nav-links {
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    margin-left: auto;
+}
+
+.app-nav-links .nav-link {
+    border-radius: 6px;
+    color: rgba(255, 255, 255, .78);
+    font-size: .94rem;
+    font-weight: 700;
+    padding: .48rem .7rem;
+}
+
+.app-nav-links .nav-link:hover,
+.app-nav-links .nav-link:focus,
+.app-nav-links .nav-link.active {
+    background: rgba(245, 196, 81, .16);
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.angular-page {
+    display: grid;
+    gap: 1rem;
+    width: min(100%, 680px);
+    margin: 0 auto;
+}
+
+.angular-page--wide {
+    width: min(100%, 1040px);
+}
+
 .angular-app {
     display: grid;
     gap: 1rem;
@@ -183,6 +217,24 @@ a:hover {
     border-radius: 8px;
     background: rgba(255, 255, 255, .9);
     box-shadow: var(--salon-shadow-soft);
+}
+
+.angular-heading {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.angular-heading p {
+    margin: 0;
+    color: var(--salon-muted);
+}
+
+.angular-heading .eyebrow {
+    color: var(--salon-accent-dark);
+    font-size: .76rem;
+    font-weight: 850;
+    letter-spacing: .08em;
+    text-transform: uppercase;
 }
 
 .angular-heading h1,
@@ -220,6 +272,12 @@ a:hover {
     color: var(--salon-muted);
     font-size: .86rem;
     font-weight: 750;
+}
+
+.angular-card .form-link {
+    margin: 1rem 0 0;
+    color: var(--salon-muted);
+    text-align: center;
 }
 
 .angular-wide {
@@ -285,6 +343,31 @@ a:hover {
     .angular-auth-grid,
     .angular-metrics {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .app-navbar .container-fluid {
+        flex-wrap: nowrap;
+    }
+
+    .app-navbar .navbar-brand {
+        max-width: 45vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .app-nav-links {
+        gap: .1rem;
+    }
+
+    .app-nav-links .nav-link {
+        padding-inline: .45rem;
+    }
+
+    .angular-heading,
+    .angular-card {
+        padding: 1rem;
     }
 }
 

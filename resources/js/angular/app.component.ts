@@ -8,22 +8,26 @@ import { AuthService } from './services/auth.service';
     standalone: true,
     imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet],
     template: `
-        <nav class="app-navbar">
-            <a class="navbar-brand" routerLink="/login">Frizerski salon</a>
-            <div class="app-nav-links">
-                <ng-container *ngIf="auth.user(); else guestLinks">
-                    <a routerLink="/termini/create" routerLinkActive="active">Zakazivanje</a>
-                    <button type="button" class="btn btn-sm btn-outline-light" (click)="logout()">Odjava</button>
-                </ng-container>
-                <ng-template #guestLinks>
-                    <a routerLink="/login" routerLinkActive="active">Prijava</a>
-                    <a routerLink="/register" routerLinkActive="active">Registracija</a>
-                </ng-template>
+        <nav class="navbar navbar-dark app-navbar">
+            <div class="container-fluid">
+                <a class="navbar-brand" routerLink="/login">Frizerski salon</a>
+                <div class="app-nav-links">
+                    <ng-container *ngIf="auth.user(); else guestLinks">
+                        <a class="nav-link" routerLink="/termini/create" routerLinkActive="active">Zakazivanje</a>
+                        <button type="button" class="btn btn-sm btn-outline-light" (click)="logout()">Odjava</button>
+                    </ng-container>
+                    <ng-template #guestLinks>
+                        <a class="nav-link" routerLink="/login" routerLinkActive="active">Prijava</a>
+                        <a class="nav-link" routerLink="/register" routerLinkActive="active">Registracija</a>
+                    </ng-template>
+                </div>
             </div>
         </nav>
 
         <main class="app-shell">
-            <router-outlet></router-outlet>
+            <div class="container-fluid px-4">
+                <router-outlet></router-outlet>
+            </div>
         </main>
     `,
 })
