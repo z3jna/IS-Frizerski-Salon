@@ -6,7 +6,7 @@
         <h1 class="h3 mb-1">Dashboard</h1>
         <p class="text-muted mb-0">Pregled rada za ulogu: {{ $user->role }}</p>
     </div>
-    <a href="{{ \App\Support\FrontendUrl::angular('/termini/create') }}" class="btn btn-primary">Novi termin</a>
+    <a href="/termini/create" class="btn btn-primary">Novi termin</a>
 </div>
 
 @if($user->isAdmin())

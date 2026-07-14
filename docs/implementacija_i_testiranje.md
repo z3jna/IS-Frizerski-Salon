@@ -17,7 +17,7 @@ npm install
 npm run dev
 ```
 
-Angular delovi su integrisani u isti projekat. Lokalno se otvaraju preko Vite dev servera: `http://127.0.0.1:4200/login`, `http://127.0.0.1:4200/register` i `http://127.0.0.1:4200/termini/create`. Laravel rute na `8000` preusmeravaju na te Angular stranice. Na Railway produkciji isti ekrani se serviraju preko `APP_URL` domena kroz `npm run build`.
+Angular delovi su integrisani u isti Laravel projekat. Lokalno se otvaraju na `/login`, `/register` i `/termini/create` preko Laravel hosta, dok Vite servira razvojne assete. Na Railway produkciji iste relativne rute automatski koriste aktivni `APP_URL` domen.
 
 ## API autentifikacija
 
@@ -55,9 +55,9 @@ Primer odgovora:
 
 Autentifikacija: `POST /api/register`, `POST /api/login`, `POST /api/logout`, `GET /api/user`.
 
-CRUD: `/api/klijenti`, `/api/usluge`, `/api/zaposleni`, `/api/termini`, `/api/tretmani`, `/api/racuni`.
+Zakazivanje: `GET /api/usluge`, `GET /api/zaposleni`, `GET /api/dostupni-termini`, `POST /api/termini`.
 
-Raspored: `GET /api/dostupni-termini`, `GET /api/termini/klijent/{id}`, `GET /api/termini/zaposleni/{id}`.
+To je ukupno osam API ruta koje Angular stvarno koristi. Ostali Laravel CRUD procesi koriste `routes/web.php` i Blade kontrolere.
 
 ## Pravila zakazivanja
 
@@ -65,7 +65,7 @@ Datum termina mora biti danas ili u buducnosti. Usluga, klijent i zaposleni mora
 
 ## Smoke test
 
-Provereno lokalno preko HTTP zahteva: login, `GET /api/user`, `GET /api/usluge`, `GET /api/dostupni-termini`, `POST /api/termini`, `PUT /api/termini/{id}`, `GET /api/termini/klijent/{id}`, `GET /api/termini/zaposleni/{id}`, `DELETE /api/termini/{id}`.
+Provereno lokalno preko HTTP zahteva i browsera: login, `GET /api/user`, `GET /api/usluge`, `GET /api/zaposleni`, `GET /api/dostupni-termini`, `POST /api/termini` i logout. Potvrđen je i prelazak iz Angular menija na Laravel Dashboard bez ponovne prijave.
 
 Rezultat: svi smoke test koraci su prosli.
 

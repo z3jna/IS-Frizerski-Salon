@@ -1,15 +1,13 @@
 {
   "info": {
-    "name": "Frizerski salon API - testovi",
+    "name": "Frizerski salon - Angular API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "base_url", "value": "http://127.0.0.1:8000" },
+    { "key": "base_url", "value": "https://YOUR_HOSTED_DOMAIN" },
     { "key": "token", "value": "" },
-    { "key": "klijent_id", "value": "1" },
     { "key": "zaposleni_id", "value": "1" },
-    { "key": "usluga_id", "value": "1" },
-    { "key": "termin_id", "value": "1" }
+    { "key": "usluga_id", "value": "1" }
   ],
   "item": [
     {
@@ -20,7 +18,7 @@
         "url": "{{base_url}}/api/register",
         "body": {
           "mode": "raw",
-          "raw": "{\"ime\":\"Test\",\"prezime\":\"Klijent\",\"email\":\"test.klijent{{$timestamp}}@salon.test\",\"telefon\":\"060/100-200\",\"password\":\"password\",\"password_confirmation\":\"password\"}"
+          "raw": "{\"ime\":\"Test\",\"prezime\":\"Klijent\",\"email\":\"test.klijent{{$timestamp}}@salon.test\",\"telefon\":\"060100200\",\"password\":\"password\",\"password_confirmation\":\"password\"}"
         }
       }
     },
@@ -45,8 +43,16 @@
         "url": "{{base_url}}/api/login",
         "body": {
           "mode": "raw",
-          "raw": "{\"email\":\"admin@salon.test\",\"password\":\"password\"}"
+          "raw": "{\"email\":\"ana@salon.test\",\"password\":\"password\"}"
         }
+      }
+    },
+    {
+      "name": "GET /api/user",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base_url}}/api/user"
       }
     },
     {
@@ -58,17 +64,23 @@
       }
     },
     {
+      "name": "GET /api/zaposleni",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base_url}}/api/zaposleni"
+      }
+    },
+    {
+      "name": "GET /api/dostupni-termini",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base_url}}/api/dostupni-termini?datum=2027-07-20&zaposleni_id={{zaposleni_id}}&usluga_id={{usluga_id}}"
+      }
+    },
+    {
       "name": "POST /api/termini",
-      "event": [{
-        "listen": "test",
-        "script": {
-          "exec": [
-            "pm.test('Termin je kreiran', function () { pm.response.to.have.status(201); });",
-            "pm.collectionVariables.set('termin_id', pm.response.json().data.id);"
-          ],
-          "type": "text/javascript"
-        }
-      }],
       "request": {
         "method": "POST",
         "header": [
@@ -78,44 +90,16 @@
         "url": "{{base_url}}/api/termini",
         "body": {
           "mode": "raw",
-          "raw": "{\"datum\":\"2026-07-20\",\"vreme_pocetka\":\"09:00\",\"klijent_id\":{{klijent_id}},\"zaposleni_id\":{{zaposleni_id}},\"usluga_id\":{{usluga_id}},\"napomena\":\"Postman test\"}"
+          "raw": "{\"datum\":\"2027-07-20\",\"vreme_pocetka\":\"09:00\",\"zaposleni_id\":{{zaposleni_id}},\"usluga_id\":{{usluga_id}},\"napomena\":\"Postman test\"}"
         }
       }
     },
     {
-      "name": "GET /api/termini/klijent/{id}",
+      "name": "POST /api/logout",
       "request": {
-        "method": "GET",
+        "method": "POST",
         "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-        "url": "{{base_url}}/api/termini/klijent/{{klijent_id}}"
-      }
-    },
-    {
-      "name": "GET /api/termini/zaposleni/{id}",
-      "request": {
-        "method": "GET",
-        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-        "url": "{{base_url}}/api/termini/zaposleni/{{zaposleni_id}}"
-      }
-    },
-    {
-      "name": "PUT /api/termini/{id}",
-      "request": {
-        "method": "PUT",
-        "header": [
-          { "key": "Authorization", "value": "Bearer {{token}}" },
-          { "key": "Content-Type", "value": "application/json" }
-        ],
-        "url": "{{base_url}}/api/termini/{{termin_id}}",
-        "body": { "mode": "raw", "raw": "{\"status\":\"otkazan\"}" }
-      }
-    },
-    {
-      "name": "DELETE /api/termini/{id}",
-      "request": {
-        "method": "DELETE",
-        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-        "url": "{{base_url}}/api/termini/{{termin_id}}"
+        "url": "{{base_url}}/api/logout"
       }
     }
   ]

@@ -43,8 +43,8 @@
             @else
                 <ul class="navbar-nav ms-auto align-items-xl-center">
                     <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Početna</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ \App\Support\FrontendUrl::angular('/login') }}">Prijava</a></li>
-                    <li class="nav-item"><a class="btn btn-sm btn-light ms-lg-2" href="{{ \App\Support\FrontendUrl::angular('/register') }}">Registracija</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/login">Prijava</a></li>
+                    <li class="nav-item"><a class="btn btn-sm btn-light ms-lg-2" href="/register">Registracija</a></li>
                 </ul>
             @endauth
         </div>

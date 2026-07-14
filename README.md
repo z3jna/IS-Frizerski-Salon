@@ -12,7 +12,7 @@ php artisan migrate --seed
 php artisan serve
 ```
 
-Angular se koristi samo za prijavu i zakazivanje termina u okviru istog Laravel projekta. Vite dev server za Angular assete pokrece se na portu 4200:
+Angular se koristi za prijavu, registraciju i zakazivanje u okviru istog Laravel projekta. Vite lokalno servira samo razvojne assete:
 
 ```bash
 npm run dev
@@ -21,12 +21,12 @@ npm run dev
 Zatim otvorite:
 
 ```text
-http://127.0.0.1:4200/login
-http://127.0.0.1:4200/register
-http://127.0.0.1:4200/termini/create
+http://127.0.0.1:8000/login
+http://127.0.0.1:8000/register
+http://127.0.0.1:8000/termini/create
 ```
 
-PHP stranice ostaju na `http://127.0.0.1:8000`, a Laravel rute `/login`, `/register` i `/termini/create` lokalno preusmeravaju na Angular dev server.
+Laravel i Angular koriste isti host i isti port. Na produkciji iste relativne rute automatski koriste aktivni hostovani domen.
 
 JSON API rute su definisane u `routes/api.php`. Detalji i Postman kolekcija su u `docs/implementacija_i_testiranje.md` i `docs/postman_frizerski_salon_api.json`.
 
@@ -88,7 +88,7 @@ QUEUE_CONNECTION=sync
 MAIL_MAILER=log
 ```
 
-Za Railway deployment na jednom servisu `ANGULAR_URL` ne treba podesavati: Angular login, registracija i zakazivanje se serviraju preko istog `APP_URL` domena kroz Laravel build assete. `ANGULAR_URL` koristite samo ako Angular nekad odvojite na poseban domen.
+Angular login, registracija i zakazivanje serviraju se preko istog `APP_URL` domena kao i Laravel stranice. Poseban Angular domen nije potreban.
 
 `APP_KEY` generišite lokalno sa:
 
