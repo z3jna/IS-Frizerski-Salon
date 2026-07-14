@@ -10,7 +10,7 @@ import { AuthService } from './services/auth.service';
     template: `
         <nav class="navbar navbar-dark app-navbar">
             <div class="container-fluid">
-                <a class="navbar-brand" routerLink="/login">Frizerski salon</a>
+                <a class="navbar-brand" href="/">Frizerski salon</a>
                 <div class="app-nav-links">
                     <ng-container *ngIf="auth.user(); else guestLinks">
                         <a class="nav-link" routerLink="/termini/create" routerLinkActive="active">Zakazivanje</a>
